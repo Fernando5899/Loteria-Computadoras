@@ -17,9 +17,8 @@ function App() {
     const musicaLoginRef = useRef<HTMLAudioElement | null>(null);
     const musicaCantadorRef = useRef<HTMLAudioElement | null>(null);
     const musicaJugadorRef = useRef<HTMLAudioElement | null>(null);
+    const [isMuted, setIsMuted] = useState(false);
 
-    // Estado para saber si el audio está silenciado globalmente.
-    const [estaSilenciado, setEstaSilenciado] = useState(true);
     // Estados del juego
     const [markedWords, setMarkedWords] = useState<string[]>([]);
     const [deck, setDeck] = useState<string[]>([]);
@@ -50,15 +49,15 @@ function App() {
     useEffect(() => {
         musicaLoginRef.current = new Audio('/audio/login.ogg');
         musicaLoginRef.current.loop = true;
-        musicaLoginRef.current.volume = 0.2;
+        musicaLoginRef.current.volume = 0.5;
 
         musicaCantadorRef.current = new Audio('/audio/cantador.ogg');
         musicaCantadorRef.current.loop = true;
-        musicaCantadorRef.current.volume = 0.2;
+        musicaCantadorRef.current.volume = 0.5;
 
         musicaJugadorRef.current = new Audio('/audio/jugador.ogg');
         musicaJugadorRef.current.loop = true;
-        musicaJugadorRef.current.volume = 0.2;
+        musicaJugadorRef.current.volume = 0.5;
     }, []);
 
     // Función principal que dirige la música
@@ -67,7 +66,7 @@ function App() {
         musicaCantadorRef.current?.pause();
         musicaJugadorRef.current?.pause();
 
-        if (estaSilenciado || nuevaVista === 'end') return;
+        if (isMuted || nuevaVista === 'end') return;
 
         switch (nuevaVista) {
             case 'login':
@@ -85,7 +84,7 @@ function App() {
     //Lógica de Audio
     useEffect(() => {
         manejarCambioDeMusica(currentView);
-    }, [currentView, estaSilenciado]);
+    }, [currentView, isMuted, manejarCambioDeMusica]);
 
     // Efecto que aplica el tema al HTML y lo guarda
     useEffect(() => {
@@ -139,6 +138,7 @@ function App() {
 
         socket.on('game:gameOver', ({ winner }) => {
             setGameResult({ isOver: true, winner: winner });
+            manejarCambioDeMusica('end');
         });
 
         socket.on('user:connected', ({ name }) => addToast(`Jugador '${name}' se ha unido.`, 'connect'));
@@ -165,7 +165,7 @@ function App() {
 
     // Lógica de Audio
     const toggleMute = () => {
-        setEstaSilenciado(estadoPrevio => !estadoPrevio);
+        setIsMuted(prev => !prev);
     };
 
     const toggleTheme = () => {
@@ -231,12 +231,12 @@ function App() {
 
             {/* Lógica de Audio */}
             <button onClick={toggleMute} className={styles.muteButton}>
-                {estaSilenciado ? '🔇' : '🔊'}
+                {isMuted ? '🔇' : '🔊'}
             </button>
 
             {renderView()}
 
-            {gameResult.isOver && <GameOverModal winner={gameResult.winner} role={currentView} />}
+            {gameResult.isOver && <GameOverModal winner={gameResult.winner} role={currentView} isMuted={isMuted}/>}
         </div>
     );
 }

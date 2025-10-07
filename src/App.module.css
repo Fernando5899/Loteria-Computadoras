@@ -120,6 +120,28 @@
     background-color: #7f8c8d;
 }
 
+.muteButton {
+    position: fixed;
+    top: 8rem;
+    right: 2rem;
+    z-index: 1000;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-primary);
+    font-size: 2rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.muteButton:hover {
+    transform: scale(1.1);
+}
+
 /* --- ANIMACIONES --- */
 
 @keyframes fadeInOut {

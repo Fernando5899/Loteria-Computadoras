@@ -1,21 +1,35 @@
 // src/components/GameOverModal/GameOverModal.tsx
+import { useEffect} from "react";
 import Confetti from 'react-confetti';
 import { socket } from '../../services/socket';
 import styles from './GameOverModal.module.css';
 
 // El modal ahora espera el objeto 'winner' y el 'role' del usuario actual
 type Player = { id: string; name: string; role: 'crier' | 'player' };
+
 type GameOverModalProps = {
     winner: Player | null;
     role: 'crier' | 'player' | 'login';
+    isMuted: boolean; // Nuevo estado para silenciar el audio
 };
 
-export const GameOverModal = ({ winner, role }: GameOverModalProps) => {
-    // --- AÑADE ESTA LÍNEA PARA DEPURAR ---
-    console.log("Mi ID de socket es:", socket.id, "y el ID del ganador es:", winner?.id);
-
+export const GameOverModal = ({ winner, role, isMuted }: GameOverModalProps) => {
     const didIWin = socket.id === winner?.id;
 
+    console.log("Datos del Modal:", {
+       didIWin: didIWin,
+       isMuted: isMuted,
+        miID: socket.id,
+        winnerID: winner?.id,
+    });
+
+    useEffect(() => {
+        if (didIWin && !isMuted) {
+            const victoryAudio = new Audio('/audio/ganar.ogg');
+            victoryAudio.volume = 0.3;
+            victoryAudio.play();
+        }
+    }, [didIWin, isMuted]);
 
     const handlePlayAgain = () => {
         socket.emit('game:playAgain');
