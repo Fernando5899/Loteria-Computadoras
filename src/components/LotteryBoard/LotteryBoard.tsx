@@ -6,11 +6,12 @@ import { checkWin } from "../../utils/gameLogic.ts";
 
 type LotteryBoardProps = {
     words: string[]; // El tablero recibe un array de strings
-    markedWords: string[]; // Prop nueva
-    onCardClick: (word: string) => void; // Prop nueva
+    markedWords: string[];
+    onCardClick: (word: string) => void;
+    recentCard: string | null;
 };
 
-export const LotteryBoard = ({ words, markedWords, onCardClick }: LotteryBoardProps) => {
+export const LotteryBoard = ({ words, markedWords, onCardClick, recentCard }: LotteryBoardProps) => {
     const [canWin, setCanWin] = useState(false);
 
     // Cada vez que las cartas marcadas cambien, verificamos si hay una victoria
@@ -33,6 +34,7 @@ export const LotteryBoard = ({ words, markedWords, onCardClick }: LotteryBoardPr
                         // Pasamos la información a cada carta
                         isMarked={markedWords.includes(word)}
                         onClick={onCardClick}
+                        isRecent={word === recentCard}
                     />
                 ))}
             </div>

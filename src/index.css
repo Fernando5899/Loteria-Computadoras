@@ -14,6 +14,8 @@
     --color-primary: #5C95FF; /* Azul brillante (Light Blue) */
     --color-accent: #89CFF0; /*Azul bebé (Light Cyan)*/
 
+    --glow-color: var(--color-primary);
+
     --title-color: var(--color-text); /* Usará el color del texto principal */
     --title-shadow: none;
 
@@ -32,6 +34,8 @@
     --color-text: #e0e0e0;
     --color-primary: #9d84e1;
     --color-accent: #f5a6e6;
+
+    --glow-color: #f0e68c;
 
     --title-color: #FFFFFF;
     --title-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Con sombra */

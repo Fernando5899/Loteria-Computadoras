@@ -24,6 +24,7 @@ function App() {
         winner: null,
     });
     const [toasts, setToasts] = useState<Toast[]>([]);
+    const [recentCard, setRecentCard] = useState<string | null>(null);
 
     // Estado para el tema (oscuro/claro)
     const [theme, setTheme] = useState(() => {
@@ -63,7 +64,16 @@ function App() {
             setGameResult({ isOver: state.isGameWon, winner: state.winner });
         });
 
-        socket.on('game:newCard', (data) => setCalledCards(data.allCalledCards));
+        socket.on('game:newCard', (data) => {
+            setCalledCards(data.allCalledCards);
+
+            setRecentCard(data.newCard); // Guardamos la nueva carta
+
+            // Después de 2 segundos, limpiamos para que el brillo se apague
+            setTimeout(() => {
+                setRecentCard(null);
+            }, 2000);
+        });
 
         socket.on('game:gameOver', ({ winner }) => {
             setGameResult({ isOver: true, winner: winner });
@@ -115,7 +125,12 @@ function App() {
             case 'crier':
                 return <CrierView deck={deck} calledCards={calledCards} />;
             case 'player':
-                return <LotteryBoard words={playerBoard} markedWords={markedWords} onCardClick={handleCardClick} />;
+                return <LotteryBoard
+                    words={playerBoard}
+                    markedWords={markedWords}
+                    onCardClick={handleCardClick}
+                    recentCard={recentCard}
+                    />;
             case 'login':
             default:
                 return <LoginView onJoinAsPlayer={handleJoinAsPlayer} />;

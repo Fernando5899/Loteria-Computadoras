@@ -39,6 +39,21 @@
     color: white;
 }
 
+.highlight {
+    animation: glow 1s 2; /* La animación 'glow' dura 1s y se repite 2 veces*/
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--glow-color), 0 0 20px var(--glow-color), 0 0 25px var(--glow-color);
+        transform: scale(1.05);
+    }
+    50% {
+        box-shadow: 0 0 15px #fff, 0 0 25px #fff, 0 0 35px var(--glow-color), 0 0 45px var(--glow-color), 0 0 55px var(--glow-color);
+        transform: scale(1.1);
+    }
+}
+
 /* Hacemos nuestras queries un poco más sensibles, para que se activen antes */
 @container lottery-card (max-width: 90px) {
     .word {
