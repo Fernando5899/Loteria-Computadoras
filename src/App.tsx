@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { socket } from "./services/socket.ts";
 import { LotteryBoard } from "./components/LotteryBoard/LotteryBoard.tsx";
 import styles from "./App.module.css";
@@ -12,6 +12,14 @@ type Player = { id: string; name: string; role: 'crier' | 'player' };
 type Toast = { id: number; message: string; type: 'connect' | 'disconnect' };
 
 function App() {
+    // Lógica para manejar el audio
+    //Creamos una 'referencia' para cada música. Esto nos permite controlarlos
+    const musicaLoginRef = useRef<HTMLAudioElement | null>(null);
+    const musicaCantadorRef = useRef<HTMLAudioElement | null>(null);
+    const musicaJugadorRef = useRef<HTMLAudioElement | null>(null);
+
+    // Estado para saber si el audio está silenciado globalmente.
+    const [estaSilenciado, setEstaSilenciado] = useState(true);
     // Estados del juego
     const [markedWords, setMarkedWords] = useState<string[]>([]);
     const [deck, setDeck] = useState<string[]>([]);
@@ -23,6 +31,7 @@ function App() {
         isOver: false,
         winner: null,
     });
+
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [recentCard, setRecentCard] = useState<string | null>(null);
 
@@ -35,6 +44,48 @@ function App() {
     const handleExitToLogin = () => {
         setCurrentView('login');
     };
+
+    // Lógica para manejar el audio
+    // Efecto para inicializar los objetos de audio
+    useEffect(() => {
+        musicaLoginRef.current = new Audio('/audio/login.ogg');
+        musicaLoginRef.current.loop = true;
+        musicaLoginRef.current.volume = 0.2;
+
+        musicaCantadorRef.current = new Audio('/audio/cantador.ogg');
+        musicaCantadorRef.current.loop = true;
+        musicaCantadorRef.current.volume = 0.2;
+
+        musicaJugadorRef.current = new Audio('/audio/jugador.ogg');
+        musicaJugadorRef.current.loop = true;
+        musicaJugadorRef.current.volume = 0.2;
+    }, []);
+
+    // Función principal que dirige la música
+    const manejarCambioDeMusica = (nuevaVista: 'login' | 'crier' | 'player' | 'end') => {
+        musicaLoginRef.current?.pause();
+        musicaCantadorRef.current?.pause();
+        musicaJugadorRef.current?.pause();
+
+        if (estaSilenciado || nuevaVista === 'end') return;
+
+        switch (nuevaVista) {
+            case 'login':
+                musicaLoginRef.current?.play().catch(() => {});
+                break;
+            case 'crier':
+                musicaCantadorRef.current?.play().catch(() => {});
+                break;
+            case 'player':
+                musicaJugadorRef.current?.play().catch(() => {});
+                break;
+        }
+    }
+
+    //Lógica de Audio
+    useEffect(() => {
+        manejarCambioDeMusica(currentView);
+    }, [currentView, estaSilenciado]);
 
     // Efecto que aplica el tema al HTML y lo guarda
     useEffect(() => {
@@ -50,6 +101,17 @@ function App() {
             setTimeout(() => {
                 setToasts(prev => prev.filter(toast => toast.id !== id));
             }, 4000);
+        };
+
+
+        // Lógica de Audio
+        const handleAuthSuccess = () => {
+            setCurrentView('crier');
+            // Como 'currentView' cambia, el useEffect de audio se encargará de la música
+        };
+
+        const handlePlayerAssigned = () => {
+            setCurrentView('player');
         };
 
         socket.on('connect', () => addToast(`¡Te has conectado!`, 'connect'));
@@ -81,7 +143,8 @@ function App() {
 
         socket.on('user:connected', ({ name }) => addToast(`Jugador '${name}' se ha unido.`, 'connect'));
         socket.on('user:disconnected', ({ name }) => addToast(`Jugador '${name}' se ha ido.`, 'disconnect'));
-        socket.on('crier:authSuccess', () => setCurrentView('crier'));
+        socket.on('crier:authSuccess', handleAuthSuccess);
+        socket.on('player:assigned', handlePlayerAssigned);
         socket.on('crier:authFailed', () => alert('Contraseña incorrecta o el rol de cantador ya está ocupado.'));
         socket.on('server:roomFull', () => alert('La sala está llena. No puedes unirte.'));
 
@@ -93,11 +156,17 @@ function App() {
             socket.off('game:gameOver');
             socket.off('user:connected');
             socket.off('user:disconnected');
-            socket.off('crier:authSuccess');
+            socket.off('crier:authSuccess', handleAuthSuccess);
+            socket.off('player:assigned', handlePlayerAssigned);
             socket.off('crier:authFailed');
             socket.off('server:roomFull');
         };
     }, []);
+
+    // Lógica de Audio
+    const toggleMute = () => {
+        setEstaSilenciado(estadoPrevio => !estadoPrevio);
+    };
 
     const toggleTheme = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
@@ -159,6 +228,11 @@ function App() {
                     {theme === 'light' ? '🌙' : '☀️'}
                 </button>
             </div>
+
+            {/* Lógica de Audio */}
+            <button onClick={toggleMute} className={styles.muteButton}>
+                {estaSilenciado ? '🔇' : '🔊'}
+            </button>
 
             {renderView()}
 
