@@ -17,7 +17,7 @@ function App() {
     const musicaLoginRef = useRef<HTMLAudioElement | null>(null);
     const musicaCantadorRef = useRef<HTMLAudioElement | null>(null);
     const musicaJugadorRef = useRef<HTMLAudioElement | null>(null);
-    const [isMuted, setIsMuted] = useState(false);
+    const [isMuted, setIsMuted] = useState(true);
 
     // Estados del juego
     const [markedWords, setMarkedWords] = useState<string[]>([]);
@@ -30,7 +30,6 @@ function App() {
         isOver: false,
         winner: null,
     });
-
     const [toasts, setToasts] = useState<Toast[]>([]);
     const [recentCard, setRecentCard] = useState<string | null>(null);
 
