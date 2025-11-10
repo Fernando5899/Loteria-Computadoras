@@ -1,20 +1,24 @@
 .board {
-    background: var(--panel-bg);
-    border: var(--panel-border);
-    backdrop-filter: var(--panel-backdrop-filter);
-
+    /* --- ESTO AHORA ES SOLO LA CUADRÍCULA --- */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-    padding: 1.6rem;
+    gap: 1.5rem;
     width: 100%;
-    max-width: 40rem;
-    margin: 0 auto;
-    border-radius: 1rem;
-    box-shadow: 0 0.4rem 1.5rem rgba(76, 61, 61, 0.1);
+    /* Ya no tiene 'background', 'border', 'padding', etc. */
 }
 
 .boardContainer {
+    /* --- ESTILOS DEL PANEL --- */
+    background: var(--panel-bg);
+    border: var(--panel-border);
+    backdrop-filter: var(--panel-backdrop-filter);
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 45rem; /* Le damos un poco más de espacio */
+
+    /* --- ESTILOS DEL CONTENEDOR --- */
     position: relative;
     display: flex;
     flex-direction: column;

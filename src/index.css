@@ -7,19 +7,17 @@
 }
 
 :root {
-    /* MODO CLARO */
-    --color-bg-main: #F0F8FF; /* Azul claro (Alice Blue) */
-    --color-bg-secondary: #E6F2FF; /* Azul pálido (Light Cyan) */
-    --color-text: #1E3A5F; /* Azul naval (Dark Blue) */
-    --color-primary: #5C95FF; /* Azul brillante (Light Blue) */
-    --color-accent: #89CFF0; /*Azul bebé (Light Cyan)*/
+    /* --- MODO CLARO: TEMA "GREEN COMPUTING" --- */
+    --color-bg-main: #f0f8f0;       /* Verde muy claro (Honeydew) */
+    --color-bg-secondary: #e6f2e6;  /* Verde pálido para paneles */
+    --color-text: #1e4620;          /* Verde bosque oscuro para texto */
+    --color-primary: #28a745;       /* Verde "sostenible" principal */
+    --color-accent: #5cff95;        /* Verde neón "tech" */
 
     --glow-color: var(--color-primary);
-
-    --title-color: var(--color-text); /* Usará el color del texto principal */
+    --title-color: var(--color-text);
     --title-shadow: none;
 
-    /* Estilos de los paneles para el modo claro (sólidos) */
     --panel-bg: var(--color-bg-secondary);
     --panel-border: 1px solid var(--color-primary);
     --panel-backdrop-filter: none;
@@ -28,21 +26,19 @@
 }
 
 [data-theme='dark'] {
-    /* MODO OSCURO */
-    --color-bg-main: #1a1a2e;
-    --color-bg-secondary: #16213e;
-    --color-text: #e0e0e0;
-    --color-primary: #9d84e1;
-    --color-accent: #f5a6e6;
+    /* --- MODO OSCURO: TEMA "LA CARA B" (E-WASTE) --- */
+    --color-bg-main: #1a1a1a;       /* Gris carbón oscuro */
+    --color-bg-secondary: #2a2a2a;  /* Gris oscuro para paneles */
+    --color-text: #e0e0e0;          /* Texto gris claro */
+    --color-primary: #ff8c00;       /* Naranja (como el e-waste) */
+    --color-accent: #e74c3c;        /* Rojo (como el CO2/alerta) */
 
-    --glow-color: #f0e68c;
-
+    --glow-color: var(--color-primary);
     --title-color: #FFFFFF;
-    --title-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Con sombra */
+    --title-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 
-    /* Estilos de los paneles para el modo oscuro (cristal) */
     --panel-bg: rgba(255, 255, 255, 0.1);
-    --panel-border: 1px solid rgba(255, 255, 255, 0.18);
+    --panel-border: 1px solid var(--color-primary);
     --panel-backdrop-filter: blur(10px);
 }
 
@@ -54,16 +50,35 @@ body {
     font-size: 1.6rem;
     color: var(--color-text);
 
-    background: linear-gradient(-45deg, #f0f8ff, #dbefff, #bce6ff, #89cff0);
+    /* Gradiente para el modo claro */
+    background: linear-gradient(-45deg, #f0f8f0, #e6f2e6, #bce6bc, #89cff0);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
 }
 
-/* El fondo animado solo se aplica al body CUANDO el tema es oscuro */
 [data-theme='dark'] body {
-    background: linear-gradient(-45deg, #1a1a2e, #16213e, #7743DB, #4C3D3D);
+    /* Gradiente para el modo oscuro */
+    background: linear-gradient(-45deg, #1a1a1a, #2a2a2a, #ff8c00, #e74c3c);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
+}
+
+/* Ocultamos ambas animaciones por defecto */
+.leaf {
+    display: none;
+}
+.chaos {
+    display: none;
+}
+
+/* Mostramos las hojas solo en modo claro */
+[data-theme='light'] .leaf {
+    display: block;
+}
+
+/* Mostramos las calaveras solo en modo oscuro */
+[data-theme='dark'] .chaos {
+    display: block;
 }
 
 @keyframes gradientBG {

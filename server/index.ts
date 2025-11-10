@@ -3,26 +3,54 @@ import express from 'express';
 import * as http from 'http';
 import { Server, Socket } from 'socket.io';
 
-// --- CONSTANTES Y TIPOS ---
-const ALL_WORDS = [
-    'CPU', 'ALU', 'RAM', 'ROM', 'Caché', 'GPU', 'Placa Base', 'BIOS/UEFI',
-    'Bus de Datos', 'Bus de Direcciones', 'Arquitectura Von Neumann', 'Arquitectura Harvard',
-    'Set de Instrucciones (ISA)', 'CISC', 'RISC', 'Pipeline (Segmentación)',
-    'Multiprocesamiento', 'Multihilo (Multithreading)', 'Sistema Operativo',
-    'Kernel (Núcleo)', 'Drivers (Controladores)', 'SSD', 'HDD', 'Periférico',
-    'Puerto (I/O Port)', 'Latencia', 'Ancho de Banda', 'Reloj del Sistema (Clock Speed)',
-    'Virtualización', 'Firmware'
+// --- 1. NUEVA ESTRUCTURA DE DATOS ---
+type Tarjeta = {
+    palabra: string;
+    descripcion: string;
+};
+
+const ALL_WORDS: Tarjeta[] = [
+    { palabra: 'Consumo Responsable', descripcion: 'Elegir productos y servicios minimizando el impacto ambiental y social.' },
+    { palabra: 'Responsabilidad Social', descripcion: 'El compromiso de una organización con el bienestar de la sociedad.' },
+    { palabra: 'Ética', descripcion: 'Principios morales que guían el comportamiento en el desarrollo tecnológico.' },
+    { palabra: 'Basura Electrónica', descripcion: 'Residuos de aparatos eléctricos y electrónicos desechados.' },
+    { palabra: 'Emisiones de Gases (CO2)', descripcion: 'Gases liberados a la atmósfera que contribuyen al calentamiento global.' },
+    { palabra: 'Computación Verde', descripcion: 'El diseño y uso de tecnología de forma sostenible y eco-amigable.' },
+    { palabra: 'Impacto Ambiental', descripcion: 'La alteración (positiva o negativa) del medio ambiente por la tecnología.' },
+    { palabra: 'Uso Eficiente de Recursos', descripcion: 'Utilizar la menor cantidad de energía y materiales posibles.' },
+    { palabra: 'Reducir Desperdicio', descripcion: 'Minimizar la cantidad de recursos que se tiran durante la producción o uso.' },
+    { palabra: 'Reducir Contaminación', descripcion: 'Disminuir la liberación de sustancias nocivas al entorno.' },
+    { palabra: 'Prácticas Éticas', descripcion: 'Acciones que se alinean con los principios morales y el bien común.' },
+    { palabra: 'Prácticas Sostenibles', descripcion: 'Métodos que pueden mantenerse a largo plazo sin agotar recursos.' },
+    { palabra: 'Hardware y Recursos', descripcion: 'Los componentes físicos y materiales usados para construir tecnología.' },
+    { palabra: 'Eficiencia Energética', descripcion: 'Realizar la misma tarea (cálculo) utilizando menos electricidad.' },
+    { palabra: 'Centros de Datos', descripcion: 'Instalaciones que albergan miles de servidores y consumen mucha energía.' },
+    { palabra: 'Desarrollo Sostenible', descripcion: 'Innovar tecnológicamente sin comprometer las necesidades de futuras generaciones.' },
+    { palabra: 'Impacto Social', descripcion: 'El efecto que la tecnología tiene en las comunidades y la cultura.' },
+    { palabra: 'Energía Renovable', descripcion: 'Electricidad generada de fuentes como el sol o el viento, en lugar de fósiles.' },
+    { palabra: 'Microsoft', descripcion: 'Compañía que se comprometió a ser carbono negativo para 2030.' },
+    { palabra: 'Carbono Negativo', descripcion: 'Eliminar más dióxido de carbono de la atmósfera del que se emite.' },
+    { palabra: 'Ingeniería en Sistemas', descripcion: 'La disciplina de diseñar y construir soluciones tecnológicas complejas.' },
+    { palabra: 'Sector TIC', descripcion: 'Industria de las Tecnologías de la Información y Comunicación.' },
+    { palabra: 'Hardware', descripcion: 'Los componentes físicos de una computadora (CPU, GPU, RAM).' },
+    { palabra: 'Software', descripcion: 'Los programas y aplicaciones que se ejecutan en una computadora.' },
+    { palabra: 'Medio Ambiente', descripcion: 'El entorno natural que es afectado por la creación y desecho de tecnología.' },
+    { palabra: 'Sociedad', descripcion: 'El conjunto de personas que interactúan y son afectadas por la tecnología.' },
+    { palabra: 'Prácticas Justas', descripcion: 'Asegurar condiciones laborales justas en la cadena de suministro.' },
+    { palabra: 'Contaminación', descripcion: 'Presencia de componentes nocivos en el aire, agua o tierra.' },
+    { palabra: 'Protección de Datos', descripcion: 'La responsabilidad ética y legal de resguardar la información de los usuarios.' },
+    { palabra: 'Tecnología', descripcion: 'La aplicación del conocimiento científico para fines prácticos.' }
 ];
 const MAX_PLAYERS = 30;
-const CRIER_PASSWORD = 'Fernando'; // Puedes cambiar esta contraseña
+const CRIER_PASSWORD = 'Fernando';
 
 type Player = { id: string; name: string; role: 'crier' | 'player' };
 
-// --- ESTADO DEL JUEGO (VIVE EN EL SERVIDOR) ---
-let deck: string[] = [];
-let calledCards: string[] = [];
+// --- 2. EL ESTADO DEL JUEGO AHORA USA LA NUEVA ESTRUCTURA ---
+let deck: Tarjeta[] = []; // El mazo es una lista de Tarjetas
+let calledCards: Tarjeta[] = []; // Las cartas cantadas también
 let isGameWon = false;
-let winner: Player | null = null; // La única variable para el ganador
+let winner: Player | null = null;
 let players: Player[] = [];
 
 // --- FUNCIONES DE AYUDA ---
